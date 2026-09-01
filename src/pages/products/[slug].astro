@@ -1,0 +1,127 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import ProductCta from '../../components/ProductCta.astro';
+import DeviceFrame from '../../components/DeviceFrame.astro';
+import PlaceholderArt from '../../components/PlaceholderArt.astro';
+import FeatureRow from '../../components/FeatureRow.astro';
+import FAQ from '../../components/FAQ.astro';
+import Prose from '../../components/Prose.astro';
+import ProductSchema from '../../components/ProductSchema.astro';
+import { site } from '../../data/site';
+import { categoryLabel, getPrimaryCta } from '../../data/product-meta';
+
+export async function getStaticPaths() {
+  const products = await getCollection('products', ({ data }) => !data.stub);
+  return products.map((product) => ({ params: { slug: product.id }, props: { product } }));
+}
+
+const { product } = Astro.props;
+const { Content } = await render(product);
+const data = product.data;
+const meta = [categoryLabel[data.category], ...data.platforms].join(' · ');
+const cta = getPrimaryCta(product);
+const available = data.status === 'available';
+---
+
+<Base title={data.name} description={data.description ?? data.tagline}>
+  <ProductSchema slot="head" product={product} />
+
+  <section class="pb-16 pt-16 md:pb-24 md:pt-24">
+    <div class="mx-auto grid max-w-site gap-12 px-6 md:grid-cols-2 md:items-center">
+      <div data-reveal>
+        <p class="eyebrow">{meta}</p>
+        <h1 class="mt-5 text-4xl font-medium tracking-tighter">{data.name}</h1>
+        <p class="mt-5 max-w-[30ch] text-xl">{data.tagline}</p>
+        {data.description && <p class="mt-4 max-w-[44ch] text-muted">{data.description}</p>}
+        <div class="mt-8 flex flex-wrap items-center gap-6">
+          <ProductCta product={product} />
+          <StatusBadge status={data.status} />
+        </div>
+      </div>
+      <div class="flex justify-center md:justify-end" data-reveal style="--reveal-delay: 120ms">
+        {
+          data.category === 'ios' ? (
+            <DeviceFrame src={data.heroImage} alt={data.heroImageAlt ?? ''} />
+          ) : (
+            <div class="aspect-[4/3] w-full max-w-md">
+              <PlaceholderArt category={data.category} />
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    data.features.length > 0 && (
+      <Section columns eyebrow="Features" heading={`What ${data.name} does`}>
+        <div class="border-b border-line">
+          {data.features.map((feature, i) => (
+            <FeatureRow index={i} title={feature.title} body={feature.body} />
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  {
+    data.screenshots.length > 0 && (
+      <Section eyebrow="Screens" heading="A look inside">
+        <div class="flex snap-x gap-6 overflow-x-auto pb-4">
+          {data.screenshots.map((shot) => (
+            <div class="w-[240px] shrink-0 snap-center">
+              <DeviceFrame src={shot.src} alt={shot.alt} />
+            </div>
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  <Section columns eyebrow="Overview" heading={`About ${data.name}`}>
+    <Prose>
+      <Content />
+    </Prose>
+  </Section>
+
+  {
+    data.faq.length > 0 && (
+      <Section columns eyebrow="FAQ" heading="Questions">
+        <FAQ items={data.faq} />
+      </Section>
+    )
+  }
+
+  <Section columns eyebrow={available ? 'Help' : 'Status'} heading={available ? 'Support and privacy' : cta.label}>
+    {
+      available ? (
+        <p class="max-w-[52ch] text-muted">
+          Need a hand or curious what {data.name} collects? Read the{' '}
+          <a href="/support/" class="underline decoration-line underline-offset-4 hover:decoration-accent">
+            support page
+          </a>{' '}
+          or the{' '}
+          <a href="/privacy/" class="underline decoration-line underline-offset-4 hover:decoration-accent">
+            privacy policy
+          </a>
+          .
+        </p>
+      ) : (
+        <p class="max-w-[52ch] text-muted">
+          {data.name} is {data.status === 'beta' ? 'in beta' : 'in development'}. This page will update as it gets
+          closer. Questions in the meantime go to{' '}
+          <a
+            href={`mailto:${site.email}`}
+            class="underline decoration-line underline-offset-4 hover:decoration-accent"
+          >
+            {site.email}
+          </a>
+          .
+        </p>
+      )
+    }
+  </Section>
+</Base>

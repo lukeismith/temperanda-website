@@ -1,0 +1,90 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import Button from '../components/Button.astro';
+import ProductCard from '../components/ProductCard.astro';
+import FeatureRow from '../components/FeatureRow.astro';
+import { site } from '../data/site';
+import { categoryPlural, groupByCategory, sortProducts } from '../data/product-meta';
+
+const products = sortProducts(await getCollection('products'));
+const featured = products.filter((p) => p.data.featured);
+const groups = groupByCategory(products);
+
+// Draft copy: edit freely.
+const approach = [
+  {
+    title: 'Fewer features, finished.',
+    body: 'Each tool does one thing and does it completely. We would rather ship something small that works than something large that almost does.',
+  },
+  {
+    title: 'Tools that stay out of the way.',
+    body: 'Good software is quiet. The apps and devices we make are meant to be used, not managed.',
+  },
+  {
+    title: 'Made by people who use them daily.',
+    body: 'Everything here started as something we wanted for ourselves, in the studio or on the phone.',
+  },
+];
+---
+
+<Base>
+  <section class="pb-16 pt-20 md:pb-24 md:pt-32">
+    <div class="mx-auto max-w-site px-6">
+      <p class="eyebrow" data-reveal>{site.name} · Software studio</p>
+      <h1
+        class="mt-6 max-w-[12ch] text-display font-medium tracking-tighter"
+        data-reveal
+        style="--reveal-delay: 60ms"
+      >
+        Software for focus and sound.
+      </h1>
+      <p class="mt-8 max-w-[40ch] text-lg text-muted" data-reveal style="--reveal-delay: 120ms">
+        We make iPhone apps, Max for Live devices, and audio plugins. Small tools, built carefully and
+        finished properly.
+      </p>
+      <div class="mt-10 flex flex-wrap items-center gap-4" data-reveal style="--reveal-delay: 180ms">
+        <Button href="/products/">See what we're making</Button>
+        <Button href="/about/" variant="ghost">About the studio</Button>
+      </div>
+    </div>
+  </section>
+
+  {
+    featured.length > 0 && (
+      <div class="mx-auto max-w-site px-6 pb-16 md:pb-24">
+        {featured.map((product, i) => (
+          <ProductCard product={product} variant="featured" index={i} />
+        ))}
+      </div>
+    )
+  }
+
+  <Section
+    eyebrow="Products"
+    heading="What we're making"
+    intro="Three kinds of tools from one studio. Names and dates appear here as each one gets close."
+  >
+    <div class="space-y-14">
+      {
+        groups.map((group) => (
+          <div>
+            <p class="eyebrow mb-2">{categoryPlural[group.category]}</p>
+            <div class="border-b border-line">
+              {group.items.map((product) => (
+                <ProductCard product={product} />
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section columns eyebrow="Approach" heading="How we work">
+    <div class="border-b border-line">
+      {approach.map((item, i) => <FeatureRow index={i} title={item.title} body={item.body} />)}
+    </div>
+  </Section>
+</Base>

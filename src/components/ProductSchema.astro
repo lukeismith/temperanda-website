@@ -1,0 +1,27 @@
+---
+/** schema.org SoftwareApplication JSON-LD for a product page. */
+import type { CollectionEntry } from 'astro:content';
+import { getPrimaryCta } from '../data/product-meta';
+import { site } from '../data/site';
+
+interface Props {
+  product: CollectionEntry<'products'>;
+}
+
+const { product } = Astro.props;
+const { name, description, tagline, category, status } = product.data;
+const cta = getPrimaryCta(product);
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name,
+  description: description ?? tagline,
+  url: new URL(`/products/${product.id}/`, Astro.site).toString(),
+  operatingSystem: category === 'ios' ? 'iOS' : 'macOS, Windows',
+  applicationCategory: category === 'ios' ? 'LifestyleApplication' : 'MultimediaApplication',
+  author: { '@type': 'Organization', name: site.name, url: Astro.site?.toString() },
+  ...(status === 'available' && cta.kind !== 'none' ? { downloadUrl: cta.href } : {}),
+};
+---
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />

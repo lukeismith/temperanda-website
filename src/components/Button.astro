@@ -1,0 +1,46 @@
+---
+/** Rectangular button with a 1px border and 2px radius. Renders <a> when `href` is given. */
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md';
+  /** Adds rel="noopener" and an outward arrow for links that leave the site. */
+  external?: boolean;
+  type?: 'button' | 'submit';
+  class?: string;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  external = false,
+  type = 'button',
+  class: className,
+} = Astro.props;
+
+const base = 'inline-flex items-center gap-2 rounded-[2px] border font-medium transition-colors';
+const sizes = {
+  md: 'px-5 py-2.5 text-sm',
+  sm: 'px-3.5 py-1.5 text-xs',
+};
+const variants = {
+  primary: 'border-ink bg-ink text-surface hover:border-accent hover:bg-accent hover:text-ink',
+  secondary: 'border-line bg-transparent text-ink hover:border-ink',
+  ghost: 'border-transparent text-muted underline-offset-4 hover:text-ink hover:underline',
+};
+const classes = [base, sizes[size], variants[variant], className];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} rel={external ? 'noopener' : undefined}>
+      <slot />
+      {external && <span aria-hidden="true">↗</span>}
+    </a>
+  ) : (
+    <button type={type} class:list={classes}>
+      <slot />
+    </button>
+  )
+}

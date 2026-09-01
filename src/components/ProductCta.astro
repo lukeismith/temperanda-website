@@ -1,0 +1,28 @@
+---
+/**
+ * Primary call to action for a product, derived from status + links.
+ * When Permanence ships, swap the `app-store` branch for Apple's official
+ * badge artwork (src/assets/app-store-badge.svg) following Apple's guidelines.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { getPrimaryCta } from '../data/product-meta';
+import Button from './Button.astro';
+
+interface Props {
+  product: CollectionEntry<'products'>;
+  size?: 'sm' | 'md';
+}
+
+const { product, size = 'md' } = Astro.props;
+const cta = getPrimaryCta(product);
+---
+
+{
+  cta.kind === 'none' ? (
+    <p class="font-mono text-sm text-muted">{cta.label}</p>
+  ) : (
+    <Button href={cta.href} external size={size}>
+      {cta.label}
+    </Button>
+  )
+}

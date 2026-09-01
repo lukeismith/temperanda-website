@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { categoryPlural, groupByCategory, sortProducts } from '../../data/product-meta';
+
+const products = sortProducts(await getCollection('products'));
+const groups = groupByCategory(products);
+---
+
+<Base title="Products" description="iPhone apps, Max for Live devices, and audio plugins from Temperanda.">
+  <Section
+    flush
+    as="h1"
+    eyebrow="Products"
+    heading="Everything we're working on"
+    intro="Apps for the phone, devices for Ableton Live, and plugins for everywhere else. Each entry shows where it stands."
+  >
+    <div class="space-y-14">
+      {
+        groups.map((group) => (
+          <div>
+            <p class="eyebrow mb-2">{categoryPlural[group.category]}</p>
+            <div class="border-b border-line">
+              {group.items.map((product) => (
+                <ProductCard product={product} />
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+</Base>

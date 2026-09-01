@@ -1,0 +1,69 @@
+---
+/**
+ * Page section with a hairline on top and an optional header.
+ * `columns` puts the eyebrow and heading in a narrow left column and the
+ * content on the right, the asymmetric layout used throughout the site.
+ */
+export interface Props {
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  id?: string;
+  as?: 'h1' | 'h2';
+  /** Drop the top hairline (first section on a page). */
+  flush?: boolean;
+  columns?: boolean;
+  class?: string;
+}
+
+const {
+  eyebrow,
+  heading,
+  intro,
+  id,
+  as: Tag = 'h2',
+  flush = false,
+  columns = false,
+  class: className,
+} = Astro.props;
+
+const hasHeader = Boolean(eyebrow || heading || intro);
+const headingClass = 'mt-3 max-w-[20ch] text-3xl font-medium tracking-tighter';
+const introClass = 'max-w-[48ch] text-lg text-muted';
+---
+
+<section id={id} class:list={['py-16 md:py-24', !flush && 'border-t border-line', className]}>
+  <div
+    class:list={[
+      'mx-auto max-w-site px-6',
+      columns &&
+        'grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]',
+    ]}
+  >
+    {
+      columns ? (
+        <>
+          <div data-reveal>
+            {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+            {heading && <Tag class={headingClass}>{heading}</Tag>}
+          </div>
+          <div>
+            {intro && <p class:list={[introClass, 'mb-10']}>{intro}</p>}
+            <slot />
+          </div>
+        </>
+      ) : (
+        <>
+          {hasHeader && (
+            <div class="mb-10 md:mb-14" data-reveal>
+              {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+              {heading && <Tag class={headingClass}>{heading}</Tag>}
+              {intro && <p class:list={[introClass, 'mt-4']}>{intro}</p>}
+            </div>
+          )}
+          <slot />
+        </>
+      )
+    }
+  </div>
+</section>

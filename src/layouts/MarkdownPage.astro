@@ -1,0 +1,42 @@
+---
+/** Renders an entry from the `pages` collection (src/content/pages/*.md). */
+import { getEntry, render } from 'astro:content';
+import Base from './Base.astro';
+import Section from '../components/Section.astro';
+import Prose from '../components/Prose.astro';
+
+interface Props {
+  id: string;
+  eyebrow?: string;
+}
+
+const { id, eyebrow } = Astro.props;
+const entry = await getEntry('pages', id);
+if (!entry) {
+  throw new Error(`No entry "${id}" in src/content/pages`);
+}
+const { Content } = await render(entry);
+const { title, description, updated } = entry.data;
+// Dates in frontmatter parse as UTC midnight; format in UTC so the day never shifts.
+const updatedLabel = updated?.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<Base title={title} description={description}>
+  <Section flush columns as="h1" eyebrow={eyebrow ?? title} heading={title} intro={description}>
+    {
+      updated && (
+        <p class="eyebrow mb-8">
+          Last updated <time datetime={updated.toISOString().slice(0, 10)}>{updatedLabel}</time>
+        </p>
+      )
+    }
+    <Prose>
+      <Content />
+    </Prose>
+  </Section>
+</Base>

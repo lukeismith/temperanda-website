@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Source for public/og.png. Rasterise with:
+       qlmanage -t -s 1200 -o public src/assets/og.svg && mv public/og.svg.png public/og.png
+       Colours mirror the tokens in src/styles/global.css. -->
+  <rect width="1200" height="630" fill="#f4f3ef" />
+  <text x="80" y="104" font-family="Menlo, Consolas, monospace" font-size="22" letter-spacing="3" fill="#6b6b6b">TEMPERANDA · SOFTWARE STUDIO</text>
+  <line x1="80" y1="130" x2="1120" y2="130" stroke="#dedcd5" stroke-width="2" />
+  <text x="74" y="340" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="136" font-weight="500" letter-spacing="-6" fill="#131313">Temperanda</text>
+  <text x="80" y="420" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="40" fill="#6b6b6b">Software for focus and sound.</text>
+  <line x1="80" y1="500" x2="1120" y2="500" stroke="#dedcd5" stroke-width="2" />
+  <circle cx="90" cy="548" r="9" fill="#ff4c24" />
+  <text x="116" y="556" font-family="Menlo, Consolas, monospace" font-size="22" letter-spacing="3" fill="#6b6b6b">IPHONE APPS · MAX FOR LIVE · AUDIO PLUGINS</text>
+</svg>

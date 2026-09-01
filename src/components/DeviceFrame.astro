@@ -1,0 +1,45 @@
+---
+/**
+ * CSS-only iPhone frame. Pass an image from src/assets for a real screenshot;
+ * without one it shows a quiet placeholder screen.
+ */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+  src?: ImageMetadata;
+  alt?: string;
+  class?: string;
+}
+
+const { src, alt = '', class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    'relative aspect-[9/19.5] w-full max-w-[280px] rounded-[2.75rem] border-[10px] border-ink bg-ink',
+    className,
+  ]}
+>
+  <div class="h-full w-full overflow-hidden rounded-[2.1rem] bg-panel">
+    {
+      src ? (
+        <Image src={src} alt={alt} widths={[280, 560, 840]} sizes="280px" class="h-full w-full object-cover" />
+      ) : (
+        <div aria-hidden="true" class="flex h-full flex-col justify-between p-5 pt-14">
+          <div class="space-y-3">
+            <div class="h-2 w-3/5 bg-chip" />
+            <div class="h-2 w-2/5 bg-chip" />
+          </div>
+          <div class="space-y-2">
+            <div class="h-10 border border-line" />
+            <div class="h-10 border border-line" />
+            <div class="h-10 border border-line" />
+          </div>
+          <p class="font-mono text-[10px] uppercase tracking-eyebrow text-muted">Coming soon</p>
+        </div>
+      )
+    }
+  </div>
+  <span aria-hidden="true" class="absolute left-1/2 top-2.5 h-5 w-20 -translate-x-1/2 rounded-full bg-ink"></span>
+</div>
