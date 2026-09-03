@@ -30,8 +30,6 @@ faq:
     a: A generous free tier will allow everyone to enjoy the benefits of Permanence. Fairly priced subscription plans will be available for those who want every feature Permanence has to offer.
 ---
 
-Permanence is for the gap between what you meant to do today and what your phone had in mind. You set a small number of goals. You choose the apps that tend to get in the way. Permanence keeps the two in front of you and makes opening a distracting app a deliberate act instead of a reflex.
-
-It is not a productivity system and it does not want to become one. There are no streaks to protect, no dashboards to maintain. The point is to spend the time you decided to spend, and then put the phone down.
+Permanence is an application designed to help keep you on track and minimize time spent on unproductive actives like doom-scrolling. Permanence will allow the user to specify one or many different ways to limit the usage of the applications on their phone. For example, do you want to limit how much time you spend on Instagram? You can configure permanence to automatically kick you out of the app after a 5 minute window of usage.
 
 Permanence is in development. Follow along here, or [get in touch](/support/) if you want to hear about the beta.
