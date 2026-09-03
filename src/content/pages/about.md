@@ -1,6 +1,6 @@
 ---
 title: About
-description: A small software studio making tools for focus and sound.
+description: A small software studio developing iPhone applications as well as audio/visual focused plugins.
 ---
 
 <!-- Draft copy. Replace the bracketed parts. -->
