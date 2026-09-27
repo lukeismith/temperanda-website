@@ -2,3 +2,8 @@
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
+
+# Apple's CDN fetches this file for Up For Air's universal links. It must be served as
+# JSON, over HTTPS, and never through a redirect.
+/.well-known/apple-app-site-association
+  Content-Type: application/json
