@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["C8457X7583.com.temperanda.sidequest"],
+        "components": [
+          {
+            "/": "/c/*",
+            "comment": "Up For Air checkpoints: the links on printed QR cards and NFC tags."
+          }
+        ]
+      }
+    ]
+  }
+}

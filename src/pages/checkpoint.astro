@@ -1,0 +1,29 @@
+---
+/**
+ * Every Up For Air checkpoint link (/c/<payload>) is rewritten here by public/_redirects.
+ * iOS opens those links in the app when it is installed, so this page only reaches people
+ * without the app, or phones where iOS was told to open the site instead.
+ */
+import Base from '../layouts/Base.astro';
+import Button from '../components/Button.astro';
+---
+
+<Base title="Checkpoint" description="An Up For Air checkpoint." noindex>
+  <section class="pb-24 pt-20 md:pt-32">
+    <div class="mx-auto max-w-site px-6">
+      <p class="eyebrow">Up For Air · Checkpoint</p>
+      <h1 class="mt-6 text-display font-medium tracking-tighter">This is an Up For Air checkpoint.</h1>
+      <p class="mt-8 max-w-[40ch] text-lg text-muted">
+        Up For Air is an iPhone app. When it is installed, scanning this card or holding your phone near
+        this tag opens the app instead of this page.
+      </p>
+      <p class="mt-4 max-w-[40ch] text-lg text-muted">
+        If you have the app and still see this page, open Up For Air, go to Checkpoints, and choose Scan
+        a checkpoint or Read a tag.
+      </p>
+      <div class="mt-10">
+        <Button href="/products/">See our apps</Button>
+      </div>
+    </div>
+  </section>
+</Base>

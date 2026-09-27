@@ -1,0 +1,4 @@
+# Up For Air checkpoint links, https://temperanda.com/c/<payload>, are universal links.
+# On an iPhone with the app, iOS opens the app and never requests this site. Everyone
+# else gets the checkpoint page, served at the same address (200 is a rewrite).
+/c/*  /checkpoint/  200

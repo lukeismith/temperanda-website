@@ -30,6 +30,8 @@ npm run og        # re-render public/og.png from src/assets/og.svg
 | `src/styles/global.css` | Every colour, font and type size on the site, as Tailwind `@theme` tokens. |
 | `src/assets/products/<slug>/` | Product screenshots (referenced from frontmatter, optimised at build). |
 | `public/` | Files served as-is: favicon, `og.png`, `robots.txt`, Cloudflare `_headers`. |
+| `public/.well-known/apple-app-site-association` | Universal links for the Up For Air app (see below). |
+| `public/_redirects` | Cloudflare rewrite: every `/c/*` checkpoint link serves `src/pages/checkpoint.astro`. |
 
 ## Products and launch states
 
@@ -65,6 +67,22 @@ screenshots:
 - [ ] Permanence beta: set `status: beta` and `links.testFlight`.
 - [ ] Permanence release: set `status: available`, `links.appStore`, add screenshots, and swap the text button in `src/components/ProductCta.astro` for Apple's official App Store badge.
 - [ ] If the tagline changes, update `src/assets/og.svg` and run `npm run og`.
+
+## Up For Air checkpoint links
+
+Up For Air's printed QR cards and NFC tags carry `https://temperanda.com/c/<payload>`.
+iOS opens these universal links in the app when it is installed, with no request to this
+site. Everyone else gets the checkpoint page. The site has no backend: the payload is
+decoded on the phone.
+
+- `public/.well-known/apple-app-site-association` names the app (`C8457X7583.com.temperanda.sidequest`)
+  and the `/c/*` path. `public/_headers` serves it as JSON. It must stay at this exact
+  address on the bare domain, over HTTPS, and never behind a redirect. Apple's CDN
+  caches it, so a change can take a day or more to reach phones.
+- Printed cards depend on this domain and path for as long as they exist. Keep
+  `temperanda.com` renewed, and never reuse `/c/` for anything else.
+- The app keeps the same host in `CheckpointLink.host` and in its Associated Domains
+  entitlement. All three must agree.
 
 ## Deploy
 
