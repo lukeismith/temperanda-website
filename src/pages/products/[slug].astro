@@ -24,6 +24,7 @@ const data = product.data;
 const meta = [categoryLabel[data.category], ...data.platforms].join(' · ');
 const cta = getPrimaryCta(product);
 const available = data.status === 'available';
+const privacyHref = data.privacyPolicy ?? '/privacy/';
 ---
 
 <Base title={data.name} description={data.description ?? data.tagline}>
@@ -54,6 +55,18 @@ const available = data.status === 'available';
       </div>
     </div>
   </section>
+
+  {
+    data.howItWorks.length > 0 && (
+      <Section columns eyebrow="How it works" heading="Three parts">
+        <div class="border-b border-line">
+          {data.howItWorks.map((step, i) => (
+            <FeatureRow index={i} title={step.title} body={step.body} />
+          ))}
+        </div>
+      </Section>
+    )
+  }
 
   {
     data.features.length > 0 && (
@@ -88,6 +101,76 @@ const available = data.status === 'available';
   </Section>
 
   {
+    data.privacy.length > 0 && (
+      <Section columns eyebrow="Permissions and privacy" heading="What stays on your phone">
+        <dl class="divide-y divide-line border-y border-line">
+          {data.privacy.map((item) => (
+            <div class="grid gap-2 py-6 md:grid-cols-[14rem_1fr] md:gap-8" data-reveal>
+              <dt class="font-medium">{item.title}</dt>
+              <dd class="max-w-[56ch] text-muted">{item.body}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="mt-8 max-w-[52ch] text-muted">
+          The full{' '}
+          <a href={privacyHref} class="underline decoration-line underline-offset-4 hover:decoration-accent">
+            privacy policy
+          </a>{' '}
+          {data.privacyPolicy ? `for ${data.name} says exactly what the app stores and where it goes.` : 'covers this site and every product.'}
+        </p>
+      </Section>
+    )
+  }
+
+  {
+    data.requirements.length > 0 && (
+      <Section columns eyebrow="Requirements" heading="What you need">
+        <ul class="divide-y divide-line border-y border-line">
+          {data.requirements.map((line) => (
+            <li class="py-4" data-reveal>
+              {line}
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  {
+    data.pricing && (
+      <Section columns eyebrow="Pricing" heading="Free and Premium">
+        <table class="w-full border-collapse text-left">
+          <thead>
+            <tr class="border-b border-ink">
+              <th scope="col" class="eyebrow py-3 pr-4 font-normal">
+                What you get
+              </th>
+              {data.pricing.tiers.map((tier) => (
+                <th scope="col" class="eyebrow py-3 pr-4 font-normal">
+                  {tier}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line">
+            {data.pricing.rows.map((row) => (
+              <tr data-reveal>
+                <th scope="row" class="py-4 pr-4 font-medium">
+                  {row.feature}
+                </th>
+                {row.values.map((value) => (
+                  <td class="py-4 pr-4 text-muted">{value}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {data.pricing.note && <p class="mt-8 max-w-[56ch] text-muted">{data.pricing.note}</p>}
+      </Section>
+    )
+  }
+
+  {
     data.faq.length > 0 && (
       <Section columns eyebrow="FAQ" heading="Questions">
         <FAQ items={data.faq} />
@@ -104,7 +187,7 @@ const available = data.status === 'available';
             support page
           </a>{' '}
           or the{' '}
-          <a href="/privacy/" class="underline decoration-line underline-offset-4 hover:decoration-accent">
+          <a href={privacyHref} class="underline decoration-line underline-offset-4 hover:decoration-accent">
             privacy policy
           </a>
           .

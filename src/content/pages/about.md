@@ -9,7 +9,7 @@ Temperanda is a software studio run by Luke Smith, based in Chicago. It started 
 
 ## What we make
 
-**iPhone apps.** Small, focused apps for everyday problems. The first is [Permanence](/products/permanence/), an app for keeping your goals in view and your distracting apps in check.
+**iPhone apps.** Small, focused apps for everyday problems. The first is [Up For Air](/products/up-for-air/), an app that locks your distracting apps and lets you make the minutes to open them in the real world.
 
 **Max for Live devices.** Instruments and effects for Ableton Live, built in Max, designed to be played rather than configured.
 

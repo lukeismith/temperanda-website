@@ -36,7 +36,23 @@ const products = defineCollection({
         heroImage: image().optional(),
         heroImageAlt: z.string().optional(),
         screenshots: z.array(z.object({ src: image(), alt: z.string() })).default([]),
+        /** Numbered setup steps ("How it works"). */
+        howItWorks: z.array(z.object({ title: z.string(), body: z.string() })).default([]),
         features: z.array(z.object({ title: z.string(), body: z.string() })).default([]),
+        /** Site path of the product's own privacy policy page, e.g. /privacy/up-for-air/. Defaults to /privacy/. */
+        privacyPolicy: z.string().startsWith('/').optional(),
+        /** Permissions and data handling, one short row each. Links to the privacy policy. */
+        privacy: z.array(z.object({ title: z.string(), body: z.string() })).default([]),
+        /** Device, OS and permission requirements, one line each. */
+        requirements: z.array(z.string()).default([]),
+        /** Free versus paid comparison. `note` is the fine print under the table. */
+        pricing: z
+          .object({
+            tiers: z.array(z.string()).min(2).max(3),
+            rows: z.array(z.object({ feature: z.string(), values: z.array(z.string()) })),
+            note: z.string().optional(),
+          })
+          .optional(),
         faq: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
       })
       .superRefine((data, ctx) => {
@@ -57,6 +73,17 @@ const products = defineCollection({
         }
         if (data.stub && data.featured) {
           ctx.addIssue({ code: 'custom', message: 'A stub cannot be featured' });
+        }
+        if (data.pricing) {
+          const n = data.pricing.tiers.length;
+          for (const row of data.pricing.rows) {
+            if (row.values.length !== n) {
+              ctx.addIssue({
+                code: 'custom',
+                message: `pricing row "${row.feature}" needs ${n} values, one per tier`,
+              });
+            }
+          }
         }
       }),
 });
