@@ -15,12 +15,15 @@ This site is static and served by Cloudflare. We do not use analytics, advertisi
 
 If you email us, we keep your message so we can reply and follow up. We do not share it with anyone else.
 
-## Permanence
+## Up For Air
 
-- Permanence does not require an account with us, your data is *your data*.
-- Your goals, app limits, and usage data are stored on your device and are not sent to us.
-- Screen Time and app activity information is accessed through Apple's on-device frameworks and never leaves your phone.
-- Permanence does not include third-party analytics or advertising SDKs.
+Up For Air has its own [privacy policy](/privacy/up-for-air/), which App Store Connect links to. In short:
+
+- Up For Air has no account and no server. The app sends nothing to us.
+- Your locked apps, your minutes, your zones, and your checkpoints stay on your iPhone.
+- Screen Time, Apple Health, and your location are used on the phone only. The app reads Apple Health and never writes to it. It records that you reached one of your zones, not where else you go.
+- A few things go to Apple, not to us: App Store purchases, map searches in the zone editor, Siri requests, and crash reports if you chose to share them with developers.
+- The app has no analytics, no ads, no tracking, and no third-party code.
 - If you contact us for support, we only receive what you choose to send.
 
 ## Max for Live devices and audio plugins

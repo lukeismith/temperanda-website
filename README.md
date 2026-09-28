@@ -50,22 +50,22 @@ product has a name.
 To add screenshots, drop images into `src/assets/products/<slug>/` and list them:
 
 ```yaml
-heroImage: ../../assets/products/permanence/hero.png
-heroImageAlt: Permanence home screen showing three goals
+heroImage: ../../assets/products/up-for-air/hero.png
+heroImageAlt: Up For Air home screen showing 47 minutes to spare
 screenshots:
-  - src: ../../assets/products/permanence/goals.png
-    alt: Goals list
+  - src: ../../assets/products/up-for-air/earn.png
+    alt: The Earn tab
 ```
 
 ## Before launch
 
 - [ ] `src/data/site.ts`: confirm the contact email and add social links.
-- [ ] `src/content/products/permanence.md`: review copy marked `[confirm]` / `[edit]`, set the minimum iOS version.
+- [ ] `src/content/products/up-for-air.md`: review copy marked `[confirm]`, and replace the design-gallery render with real device screenshots.
 - [ ] `src/content/pages/about.md`: fill in the bracketed details.
 - [ ] `src/content/pages/privacy.md`: verify every bracketed statement against the shipped app (App Store Connect links to this page).
 - [ ] `src/content/pages/support.md`: confirm the response time.
-- [ ] Permanence beta: set `status: beta` and `links.testFlight`.
-- [ ] Permanence release: set `status: available`, `links.appStore`, add screenshots, and swap the text button in `src/components/ProductCta.astro` for Apple's official App Store badge.
+- [ ] Up For Air beta: set `status: beta` and `links.testFlight`.
+- [ ] Up For Air release: set `status: available`, `links.appStore`, add screenshots, and swap the text button in `src/components/ProductCta.astro` for Apple's official App Store badge.
 - [ ] If the tagline changes, update `src/assets/og.svg` and run `npm run og`.
 
 ## Up For Air checkpoint links
