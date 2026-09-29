@@ -1,7 +1,7 @@
 # temperanda.com
 
 Static website for Temperanda, a software studio making iPhone apps, Max for Live
-devices, and audio plugins. Built with Astro 7 and Tailwind v4, deployed to Cloudflare Pages.
+devices, and audio plugins. Built with Astro 7 and Tailwind v4, deployed as a static site on Cloudflare Workers.
 
 ## Requirements
 
@@ -86,6 +86,15 @@ decoded on the phone.
 
 ## Deploy
 
-Cloudflare Pages, configured in the dashboard: connect this repository, build command
-`npm run build`, output directory `dist`, environment variable `NODE_VERSION=22`, custom
-domain `temperanda.com`.
+Cloudflare Workers Builds, configured in the dashboard: connect this repository, build
+command `npm run build`, deploy command `npx wrangler deploy`, custom domain
+`temperanda.com`.
+
+`wrangler.jsonc` tells that deploy to upload `dist/` as static assets, with no Worker
+script. Keep the file: without it, Wrangler's automatic setup runs `astro add cloudflare`
+to make a server app, and the build fails. `public/_headers` and `public/_redirects` work
+the same way on Workers static assets as they did on Pages.
+
+To try the deployed behavior locally (redirects, headers, the 404 page), build, then run
+`npx wrangler dev`. `npx wrangler deploy --dry-run` checks the configuration without
+deploying.
