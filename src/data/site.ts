@@ -28,12 +28,12 @@ export interface SiteConfig {
 
 export const site: SiteConfig = {
   name: 'Temperanda',
-  tagline: 'Software build with intentionality',
+  tagline: 'Software built with intentionality',
   description:
     'Temperanda is a small software studio making iPhone apps, Max for Live devices, and audio plugins.',
   email: 'info@temperanda.com',
   ogImage: '/og.png',
-  ogAlt: 'Temperanda wordmark on a paper background',
+  ogAlt: 'Temperanda wordmark on a black background with a soft green glow',
   nav: [
     { href: '/products/', label: 'Products' },
     { href: '/about/', label: 'About' },

@@ -1,69 +1,72 @@
 ---
 /**
- * Page section with a hairline on top and an optional header.
- * `columns` puts the eyebrow and heading in a narrow left column and the
- * content on the right, the asymmetric layout used throughout the site.
+ * Page section with the upforair.app header: a pill label, the heading, then a lead,
+ * centred by default, with 56px before the content. No hairlines between sections:
+ * the section padding (96/80/64) carries the rhythm.
  */
+import Tag from './Tag.astro';
+
 export interface Props {
   eyebrow?: string;
+  /** Turns the pill into a button-sized link. */
+  eyebrowHref?: string;
   heading?: string;
   intro?: string;
   id?: string;
   as?: 'h1' | 'h2';
-  /** Drop the top hairline (first section on a page). */
-  flush?: boolean;
-  columns?: boolean;
+  align?: 'center' | 'left';
+  /** 1200px instead of 1072px, for three-column grids. */
+  wide?: boolean;
   class?: string;
 }
 
 const {
   eyebrow,
+  eyebrowHref,
   heading,
   intro,
   id,
-  as: Tag = 'h2',
-  flush = false,
-  columns = false,
+  as: Heading = 'h2',
+  align = 'center',
+  wide = false,
   class: className,
 } = Astro.props;
 
 const hasHeader = Boolean(eyebrow || heading || intro);
-const headingClass = 'mt-3 max-w-[20ch] text-3xl font-medium tracking-tighter';
-const introClass = 'max-w-[48ch] text-lg text-muted';
 ---
 
-<section id={id} class:list={['py-16 md:py-24', !flush && 'border-t border-line', className]}>
-  <div
-    class:list={[
-      'mx-auto max-w-site px-6',
-      columns &&
-        'grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]',
-    ]}
-  >
+<section id={id} class:list={['section-pad relative', className]}>
+  <div class={wide ? 'site-wrap-wide' : 'site-wrap'}>
     {
-      columns ? (
-        <>
-          <div data-reveal>
-            {eyebrow && <p class="eyebrow">{eyebrow}</p>}
-            {heading && <Tag class={headingClass}>{heading}</Tag>}
-          </div>
-          <div>
-            {intro && <p class:list={[introClass, 'mb-10']}>{intro}</p>}
-            <slot />
-          </div>
-        </>
-      ) : (
-        <>
-          {hasHeader && (
-            <div class="mb-10 md:mb-14" data-reveal>
-              {eyebrow && <p class="eyebrow">{eyebrow}</p>}
-              {heading && <Tag class={headingClass}>{heading}</Tag>}
-              {intro && <p class:list={[introClass, 'mt-4']}>{intro}</p>}
-            </div>
+      hasHeader && (
+        <div
+          class:list={[
+            'flex max-w-[760px] flex-col gap-[18px]',
+            align === 'center' ? 'mx-auto items-center text-center' : 'items-start',
+          ]}
+          data-reveal
+        >
+          {eyebrow && (
+            <Tag href={eyebrowHref} size={eyebrowHref ? 'lg' : 'md'}>
+              {eyebrow}
+            </Tag>
           )}
-          <slot />
-        </>
+          {heading && (
+            <Heading
+              class:list={[
+                'text-balance font-medium tracking-tighter',
+                Heading === 'h1' ? 'text-4xl' : 'text-3xl',
+              ]}
+            >
+              {heading}
+            </Heading>
+          )}
+          {intro && <p class="max-w-[600px] text-lg text-ink-2">{intro}</p>}
+        </div>
       )
     }
+    <div class:list={[hasHeader && 'mt-10 md:mt-14']}>
+      <slot />
+    </div>
   </div>
 </section>

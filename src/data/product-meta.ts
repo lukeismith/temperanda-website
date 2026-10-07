@@ -11,12 +11,6 @@ export const categoryLabel: Record<Category, string> = {
   plugin: 'Audio plugin',
 };
 
-export const categoryPlural: Record<Category, string> = {
-  ios: 'iPhone apps',
-  'max-for-live': 'Max for Live devices',
-  plugin: 'Audio plugins',
-};
-
 export const statusLabel: Record<Status, string> = {
   'in-development': 'In development',
   beta: 'Beta',
@@ -45,7 +39,7 @@ export function getPrimaryCta(product: Product): Cta {
   }
   return {
     kind: 'none',
-    label: category === 'ios' ? 'TestFlight beta coming soon' : 'In development',
+    label: category === 'ios' ? 'Coming soon to the App Store' : 'In development',
   };
 }
 
@@ -57,11 +51,4 @@ export function sortProducts(list: Product[]): Product[] {
       a.data.order - b.data.order ||
       a.data.name.localeCompare(b.data.name),
   );
-}
-
-export function groupByCategory(list: Product[]) {
-  return CATEGORY_ORDER.map((category) => ({
-    category,
-    items: list.filter((p) => p.data.category === category),
-  })).filter((group) => group.items.length > 0);
 }

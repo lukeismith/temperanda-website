@@ -1,0 +1,32 @@
+---
+/**
+ * One-colour 24 × 24 pictograms for the "More" cards and the pricing checks.
+ * The filled set is Up For Air's (its Almanac pictograms); the outlined set is
+ * generic, for apps without their own. Add a name here before using it in frontmatter
+ * (the `more[].icon` enum in src/content.config.ts reads PICTOGRAMS).
+ */
+import { PICTOGRAMS, type PictogramName } from '../data/pictograms';
+
+interface Props {
+  name: PictogramName;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+const icon = PICTOGRAMS[name];
+const stroke = 'stroke' in icon && icon.stroke;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  aria-hidden="true"
+  focusable="false"
+  class:list={['size-5 flex-none', className]}
+  fill={stroke ? 'none' : 'currentColor'}
+  stroke={stroke ? 'currentColor' : undefined}
+  stroke-width={stroke ? 2 : undefined}
+  stroke-linecap={stroke ? 'round' : undefined}
+  stroke-linejoin={stroke ? 'round' : undefined}
+>
+  <path d={icon.d} fill-rule="evenodd"></path>
+</svg>

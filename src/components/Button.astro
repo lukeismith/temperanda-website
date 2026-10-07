@@ -1,9 +1,12 @@
 ---
-/** Rectangular button with a 1px border and 2px radius. Renders <a> when `href` is given. */
+/**
+ * The upforair.app button: radius 14, accent fill, a 0.985 press. Renders <a> when `href` is given.
+ * primary: accent fill. outlined: a hairline ring. text: link colour only.
+ */
 interface Props {
   href?: string;
-  variant?: 'primary' | 'secondary' | 'ghost';
-  size?: 'sm' | 'md';
+  variant?: 'primary' | 'outlined' | 'text';
+  size?: 'sm' | 'md' | 'lg';
   /** Adds rel="noopener" and an outward arrow for links that leave the site. */
   external?: boolean;
   type?: 'button' | 'submit';
@@ -19,17 +22,19 @@ const {
   class: className,
 } = Astro.props;
 
-const base = 'inline-flex items-center gap-2 rounded-[2px] border font-medium transition-colors';
+const base =
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold transition-[background-color,color,box-shadow,scale] duration-200 ease-out active:scale-[0.985]';
 const sizes = {
-  md: 'px-5 py-2.5 text-sm',
-  sm: 'px-3.5 py-1.5 text-xs',
+  sm: 'rounded-btn-sm px-3.5 py-2 text-sm',
+  md: 'rounded-btn px-5 py-3 text-base',
+  lg: 'min-h-[52px] rounded-btn px-6 py-3.5 text-base',
 };
 const variants = {
-  primary: 'border-ink bg-ink text-surface hover:border-accent hover:bg-accent hover:text-ink',
-  secondary: 'border-line bg-transparent text-ink hover:border-ink',
-  ghost: 'border-transparent text-muted underline-offset-4 hover:text-ink hover:underline',
+  primary: 'bg-accent text-on-accent hover:bg-accent-hover',
+  outlined: 'bg-transparent text-ink inset-ring inset-ring-line-2 hover:bg-accent hover:text-on-accent hover:inset-ring-accent',
+  text: 'text-link underline-offset-[3px] hover:underline',
 };
-const classes = [base, sizes[size], variants[variant], className];
+const classes = [base, variant === 'text' ? 'rounded-btn-sm px-1 py-3 text-base' : sizes[size], variants[variant], className];
 ---
 
 {

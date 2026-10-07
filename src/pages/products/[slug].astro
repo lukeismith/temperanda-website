@@ -1,17 +1,27 @@
 ---
+/**
+ * The product landing page: the upforair.app layout, driven by frontmatter.
+ * Hero, How it works, Features (crossfading tabs in a phone, or a card grid), More,
+ * Overview (the Markdown body), Permissions and privacy, Requirements, Pricing, FAQ,
+ * and a closing call. Each section shows only when its frontmatter has content;
+ * `sections` overrides the default headings. The page takes the product's `theme`.
+ */
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Section from '../../components/Section.astro';
-import StatusBadge from '../../components/StatusBadge.astro';
-import ProductCta from '../../components/ProductCta.astro';
-import DeviceFrame from '../../components/DeviceFrame.astro';
+import Tag from '../../components/Tag.astro';
+import Glow from '../../components/Glow.astro';
+import PhoneFrame from '../../components/PhoneFrame.astro';
 import PlaceholderArt from '../../components/PlaceholderArt.astro';
+import ProductCta from '../../components/ProductCta.astro';
 import FeatureRow from '../../components/FeatureRow.astro';
 import FAQ from '../../components/FAQ.astro';
+import Pictogram from '../../components/Pictogram.astro';
 import Prose from '../../components/Prose.astro';
 import ProductSchema from '../../components/ProductSchema.astro';
 import { site } from '../../data/site';
-import { categoryLabel, getPrimaryCta } from '../../data/product-meta';
+import { categoryLabel } from '../../data/product-meta';
 
 export async function getStaticPaths() {
   const products = await getCollection('products', ({ data }) => !data.stub);
@@ -21,48 +31,90 @@ export async function getStaticPaths() {
 const { product } = Astro.props;
 const { Content } = await render(product);
 const data = product.data;
+const s = data.sections;
 const meta = [categoryLabel[data.category], ...data.platforms].join(' · ');
-const cta = getPrimaryCta(product);
 const available = data.status === 'available';
 const privacyHref = data.privacyPolicy ?? '/privacy/';
+const supportHref = data.support ?? '/support/';
+const isPhone = data.category === 'ios';
+// Tabs need a screenshot for every feature, and the phone frame is for iPhone apps only.
+const tabbed = isPhone && data.features.length > 0 && data.features.every((f) => f.image);
+// With many tabs, only the selected one shows its sentence, so the list stays beside the phone.
+const compact = data.features.length > 4;
+// Two or four extras read better as a centred two-column block than as three and one.
+const moreColumns = [2, 4].includes(data.more.length) ? 'mx-auto max-w-[900px]' : 'lg:grid-cols-3';
+const hasOverview = Boolean(product.body?.trim());
+const words = data.tagline.split(' ');
+const iconClass = 'rounded-[22.5%] ring ring-line';
 ---
 
-<Base title={data.name} description={data.description ?? data.tagline}>
+<Base title={data.name} description={data.description ?? data.tagline} theme={data.theme}>
   <ProductSchema slot="head" product={product} />
 
-  <section class="pb-16 pt-16 md:pb-24 md:pt-24">
-    <div class="mx-auto grid max-w-site gap-12 px-6 md:grid-cols-2 md:items-center">
-      <div data-reveal>
-        <p class="eyebrow">{meta}</p>
-        <h1 class="mt-5 text-4xl font-medium tracking-tighter">{data.name}</h1>
-        <p class="mt-5 max-w-[30ch] text-xl">{data.tagline}</p>
-        {data.description && <p class="mt-4 max-w-[44ch] text-muted">{data.description}</p>}
-        <div class="mt-8 flex flex-wrap items-center gap-6">
-          <ProductCta product={product} />
-          <StatusBadge status={data.status} />
-        </div>
-      </div>
-      <div class="flex justify-center md:justify-end" data-reveal style="--reveal-delay: 120ms">
+  <section class="relative overflow-hidden pb-14 pt-10 md:pt-[72px]" aria-labelledby="hero-title">
+    <div class="site-wrap relative flex flex-col items-center text-center">
+      {
+        data.icon && (
+          <Image
+            src={data.icon}
+            alt=""
+            widths={[72, 144, 216]}
+            sizes="72px"
+            loading="eager"
+            class:list={['hero-in hero-icon mb-6 size-[72px]', iconClass]}
+          />
+        )
+      }
+      <Tag class="hero-in hero-tag">{data.name}</Tag>
+      <h1 id="hero-title" class="hero-title mt-6 max-w-[720px] text-balance text-4xl font-medium tracking-tighter">
         {
-          data.category === 'ios' ? (
-            <DeviceFrame src={data.heroImage} alt={data.heroImageAlt ?? ''} />
-          ) : (
-            <div class="aspect-[4/3] w-full max-w-md">
+          words.map((word, i) => (
+            <>
+              <span class="word" style={`--i: ${i}`}>
+                {word}
+              </span>{' '}
+            </>
+          ))
+        }
+      </h1>
+      {data.description && <p class="hero-in hero-lead mt-[22px] max-w-[580px] text-lg text-ink-2">{data.description}</p>}
+      <div class="hero-in hero-cta mt-8 flex flex-col items-center gap-3">
+        <ProductCta product={product} size="lg" />
+        <p class="text-sm text-ink-2">{meta}</p>
+      </div>
+
+      {
+        isPhone && data.heroImage ? (
+          <div class="relative mt-12 w-full">
+            <Glow x="50%" y="55%" width="60%" height="70%" opacity={0.28} />
+            <PhoneFrame src={data.heroImage} alt={data.heroImageAlt} eager />
+          </div>
+        ) : (
+          !isPhone && (
+            <div class="glass-card mt-12 aspect-[4/3] w-full max-w-md overflow-hidden">
               <PlaceholderArt category={data.category} />
             </div>
           )
-        }
-      </div>
+        )
+      }
     </div>
   </section>
 
   {
     data.howItWorks.length > 0 && (
-      <Section columns eyebrow="How it works" heading="Three parts">
-        <div class="border-b border-line">
-          {data.howItWorks.map((step, i) => (
-            <FeatureRow index={i} title={step.title} body={step.body} />
-          ))}
+      <Section
+        id="how-it-works"
+        eyebrow={s.howItWorks?.eyebrow ?? 'How it works'}
+        heading={s.howItWorks?.heading ?? `How ${data.name} works`}
+        intro={s.howItWorks?.intro}
+      >
+        <div class="relative">
+          <Glow tone="link" x="50%" y="40%" width="80%" height="70%" opacity={0.14} />
+          <ol class="relative grid gap-7 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+            {data.howItWorks.map((step, i) => (
+              <FeatureRow index={i} title={step.title} body={step.body} />
+            ))}
+          </ol>
         </div>
       </Section>
     )
@@ -70,65 +122,122 @@ const privacyHref = data.privacyPolicy ?? '/privacy/';
 
   {
     data.features.length > 0 && (
-      <Section columns eyebrow="Features" heading={`What ${data.name} does`}>
-        <div class="border-b border-line">
-          {data.features.map((feature, i) => (
-            <FeatureRow index={i} title={feature.title} body={feature.body} />
-          ))}
-        </div>
-      </Section>
-    )
-  }
-
-  {
-    data.screenshots.length > 0 && (
-      <Section eyebrow="Screens" heading="A look inside">
-        <div class="flex snap-x gap-6 overflow-x-auto pb-4">
-          {data.screenshots.map((shot) => (
-            <div class="w-[240px] shrink-0 snap-center">
-              <DeviceFrame src={shot.src} alt={shot.alt} />
+      <Section
+        id="features"
+        eyebrow={s.features?.eyebrow ?? 'Features'}
+        heading={s.features?.heading ?? `What ${data.name} does`}
+        intro={s.features?.intro}
+      >
+        {tabbed ? (
+          <div
+            class="grid items-center gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-[minmax(0,480px)_minmax(0,1fr)] lg:gap-16"
+            data-features
+            data-compact={compact ? '' : undefined}
+          >
+            <div
+              class="flex flex-col gap-1.5"
+              role="tablist"
+              aria-orientation="vertical"
+              aria-label={`${data.name} features`}
+              data-reveal
+            >
+              {data.features.map((feature, i) => (
+                <button
+                  type="button"
+                  role="tab"
+                  id={`feature-tab-${i}`}
+                  aria-selected={i === 0 ? 'true' : 'false'}
+                  aria-controls="feature-stage"
+                  tabindex={i === 0 ? 0 : -1}
+                  class="flex w-full flex-col items-start gap-2 rounded-panel px-6 py-[22px] text-left transition-[background-color,box-shadow] duration-[350ms] ease-out hover:bg-white/2 aria-selected:bg-glass aria-selected:inset-ring aria-selected:inset-ring-line"
+                  data-feature
+                >
+                  <span class="text-xl font-medium tracking-tight">{feature.title}</span>
+                  <span class="feature-body text-ink-2">{feature.body}</span>
+                </button>
+              ))}
             </div>
-          ))}
-        </div>
-      </Section>
-    )
-  }
 
-  <Section columns eyebrow="Overview" heading={`About ${data.name}`}>
-    <Prose>
-      <Content />
-    </Prose>
-  </Section>
-
-  {
-    data.privacy.length > 0 && (
-      <Section columns eyebrow="Permissions and privacy" heading="What stays on your phone">
-        <dl class="divide-y divide-line border-y border-line">
-          {data.privacy.map((item) => (
-            <div class="grid gap-2 py-6 md:grid-cols-[14rem_1fr] md:gap-8" data-reveal>
-              <dt class="font-medium">{item.title}</dt>
-              <dd class="max-w-[56ch] text-muted">{item.body}</dd>
+            <div class="relative" data-reveal>
+              <Glow width="90%" height="90%" opacity={0.2} />
+              <div id="feature-stage" role="tabpanel" aria-labelledby="feature-tab-0">
+                <PhoneFrame>
+                  {data.features.map(
+                    (feature, i) =>
+                      feature.image && (
+                        <Image
+                          src={feature.image}
+                          alt={feature.imageAlt ?? ''}
+                          widths={[300, 340, 600, 680, 1020]}
+                          sizes="(max-width: 809px) 300px, 340px"
+                          loading="lazy"
+                          data-shot
+                          data-active={i === 0 ? '' : undefined}
+                          aria-hidden={i === 0 ? undefined : 'true'}
+                          class="absolute inset-0 size-full object-cover object-top opacity-0 transition-opacity duration-[450ms] ease-out data-active:opacity-100"
+                        />
+                      ),
+                  )}
+                </PhoneFrame>
+              </div>
+              {compact && (
+                <p class="mt-6 text-center text-ink-2" data-feature-caption aria-live="polite">
+                  {data.features[0].body}
+                </p>
+              )}
             </div>
-          ))}
-        </dl>
-        <p class="mt-8 max-w-[52ch] text-muted">
-          The full{' '}
-          <a href={privacyHref} class="underline decoration-line underline-offset-4 hover:decoration-accent">
-            privacy policy
-          </a>{' '}
-          {data.privacyPolicy ? `for ${data.name} says exactly what the app stores and where it goes.` : 'covers this site and every product.'}
-        </p>
+          </div>
+        ) : (
+          <div class="relative">
+            <Glow x="50%" y="50%" width="80%" height="70%" opacity={0.16} />
+            <ul class="relative grid gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-3">
+              {data.features.map((feature, i) => (
+                <li
+                  class="glass-card z-[1] flex flex-col gap-2.5 px-6 py-7"
+                  data-reveal
+                  style={`--reveal-delay: ${(i % 3) * 80}ms`}
+                >
+                  <h3 class="text-xl font-medium tracking-tight">{feature.title}</h3>
+                  <p class="text-ink-2">{feature.body}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </Section>
     )
   }
 
   {
-    data.requirements.length > 0 && (
-      <Section columns eyebrow="Requirements" heading="What you need">
-        <ul class="divide-y divide-line border-y border-line">
-          {data.requirements.map((line) => (
-            <li class="py-4" data-reveal>
-              {line}
+    data.more.length > 0 && (
+      <Section
+        id="more"
+        wide
+        eyebrow={s.more?.eyebrow ?? 'More'}
+        heading={s.more?.heading ?? 'And the small things'}
+        intro={s.more?.intro}
+      >
+        <ul
+          class:list={[
+            'grid gap-3.5 md:grid-cols-2 md:gap-5 lg:[&>li:last-child:nth-child(3n+1)]:col-start-2',
+            moreColumns,
+          ]}
+        >
+          {data.more.map((item, i) => (
+            <li
+              class="glass-card flex flex-col gap-[18px] px-6 py-[26px]"
+              data-reveal
+              style={`--reveal-delay: ${(i % 3) * 80}ms`}
+            >
+              {item.icon && (
+                <span class="inline-flex size-11 items-center justify-center rounded-full bg-glass-2 text-ink">
+                  <Pictogram name={item.icon} class="size-[22px]" />
+                </span>
+              )}
+              <div class="flex flex-col gap-2">
+                <h3 class="text-lg font-medium tracking-tight">{item.title}</h3>
+                <p class="text-ink-2">{item.body}</p>
+              </div>
             </li>
           ))}
         </ul>
@@ -137,74 +246,335 @@ const privacyHref = data.privacyPolicy ?? '/privacy/';
   }
 
   {
+    hasOverview && (
+      <Section
+        id="overview"
+        eyebrow={s.overview?.eyebrow ?? 'Overview'}
+        heading={s.overview?.heading ?? `About ${data.name}`}
+        intro={s.overview?.intro}
+      >
+        <div class="mx-auto max-w-[680px]" data-reveal>
+          <Prose>
+            <Content />
+          </Prose>
+        </div>
+      </Section>
+    )
+  }
+
+  {
+    data.privacy.length > 0 && (
+      <Section
+        id="privacy"
+        eyebrow={s.privacy?.eyebrow ?? 'Permissions and privacy'}
+        heading={s.privacy?.heading ?? 'What stays on your phone'}
+        intro={s.privacy?.intro}
+      >
+        <dl class="grid gap-4 md:grid-cols-2 md:gap-5">
+          {data.privacy.map((item, i) => (
+            <div class="glass-card flex flex-col gap-2 px-6 py-6" data-reveal style={`--reveal-delay: ${(i % 2) * 80}ms`}>
+              <dt class="text-lg font-medium tracking-tight">{item.title}</dt>
+              <dd class="text-ink-2">{item.body}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="mx-auto mt-8 max-w-[52ch] text-center text-ink-2">
+          The full{' '}
+          <a href={privacyHref} class="text-link underline-offset-4 hover:underline">
+            privacy policy
+          </a>{' '}
+          {data.privacyPolicy
+            ? `for ${data.name} says exactly what the app stores and where it goes.`
+            : 'covers this site and every product.'}
+        </p>
+      </Section>
+    )
+  }
+
+  {
+    data.requirements.length > 0 && (
+      <Section
+        id="requirements"
+        eyebrow={s.requirements?.eyebrow ?? 'Requirements'}
+        heading={s.requirements?.heading ?? 'What you need'}
+        intro={s.requirements?.intro}
+      >
+        <ul class="glass-card mx-auto max-w-[800px] divide-y divide-line px-6" data-reveal>
+          {data.requirements.map((line) => (
+            <li class="py-4">{line}</li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  {
     data.pricing && (
-      <Section columns eyebrow="Pricing" heading="Free and Premium">
-        <table class="w-full border-collapse text-left">
-          <thead>
-            <tr class="border-b border-ink">
-              <th scope="col" class="eyebrow py-3 pr-4 font-normal">
-                What you get
-              </th>
-              {data.pricing.tiers.map((tier) => (
-                <th scope="col" class="eyebrow py-3 pr-4 font-normal">
-                  {tier}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-line">
-            {data.pricing.rows.map((row) => (
-              <tr data-reveal>
-                <th scope="row" class="py-4 pr-4 font-medium">
-                  {row.feature}
-                </th>
-                {row.values.map((value) => (
-                  <td class="py-4 pr-4 text-muted">{value}</td>
-                ))}
-              </tr>
+      <Section
+        id="pricing"
+        eyebrow={s.pricing?.eyebrow ?? 'Pricing'}
+        heading={s.pricing?.heading ?? `What ${data.name} costs`}
+        intro={s.pricing?.intro}
+      >
+        <div class="relative mx-auto max-w-[900px]">
+          <Glow tone="link" width="80%" height="80%" opacity={0.16} />
+          <div
+            class:list={[
+              'relative grid gap-4 md:gap-6',
+              data.pricing.plans.length > 1 && 'md:grid-cols-2',
+              data.pricing.plans.length > 2 && 'lg:grid-cols-3',
+            ]}
+          >
+            {data.pricing.plans.map((plan, i) => (
+              <article
+                class:list={[
+                  'glass-card z-[1] flex flex-col gap-7 px-[22px] py-7 md:px-8 md:py-9',
+                  plan.highlight && 'glass-card-accent',
+                ]}
+                data-reveal
+                style={`--reveal-delay: ${i * 100}ms`}
+              >
+                <div class="flex flex-col gap-3">
+                  <h3 class="text-xl font-medium tracking-tight">{plan.name}</h3>
+                  {plan.price && (
+                    <p class="flex flex-wrap items-baseline gap-x-2">
+                      <span class="text-4xl font-medium tracking-tighter">{plan.price}</span>
+                      {plan.period && <span class="text-lg text-ink-2">{plan.period}</span>}
+                    </p>
+                  )}
+                  <p class="text-ink-2">{plan.description}</p>
+                </div>
+                {plan.features.length > 0 && (
+                  <ul class="flex flex-col gap-2.5">
+                    {plan.features.map((line) => (
+                      <li class="flex items-start gap-2.5">
+                        <Pictogram name="check" class="mt-1 size-4 text-link" />
+                        <span>{line}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
             ))}
-          </tbody>
-        </table>
-        {data.pricing.note && <p class="mt-8 max-w-[56ch] text-muted">{data.pricing.note}</p>}
+          </div>
+        </div>
+        {data.pricing.note && <p class="mx-auto mt-8 max-w-[56ch] text-center text-ink-2">{data.pricing.note}</p>}
       </Section>
     )
   }
 
   {
     data.faq.length > 0 && (
-      <Section columns eyebrow="FAQ" heading="Questions">
+      <Section
+        id="faq"
+        eyebrow={s.faq?.eyebrow ?? 'FAQ'}
+        heading={s.faq?.heading ?? 'Questions'}
+        intro={s.faq?.intro}
+      >
         <FAQ items={data.faq} />
       </Section>
     )
   }
 
-  <Section columns eyebrow={available ? 'Help' : 'Status'} heading={available ? 'Support and privacy' : cta.label}>
-    {
-      available ? (
-        <p class="max-w-[52ch] text-muted">
-          Need a hand or curious what {data.name} collects? Read the{' '}
-          <a href="/support/" class="underline decoration-line underline-offset-4 hover:decoration-accent">
-            support page
-          </a>{' '}
-          or the{' '}
-          <a href={privacyHref} class="underline decoration-line underline-offset-4 hover:decoration-accent">
-            privacy policy
-          </a>
-          .
-        </p>
-      ) : (
-        <p class="max-w-[52ch] text-muted">
-          {data.name} is {data.status === 'beta' ? 'in beta' : 'in development'}. This page will update as it gets
-          closer. Questions in the meantime go to{' '}
-          <a
-            href={`mailto:${site.email}`}
-            class="underline decoration-line underline-offset-4 hover:decoration-accent"
-          >
-            {site.email}
-          </a>
-          .
-        </p>
-      )
-    }
-  </Section>
+  <section class="section-pad" aria-labelledby="cta-title">
+    <div class="site-wrap flex flex-col items-center gap-[22px] text-center" data-reveal>
+      {
+        data.icon && (
+          <Image src={data.icon} alt="" widths={[96, 192, 288]} sizes="96px" class:list={['size-24', iconClass]} />
+        )
+      }
+      <h2 id="cta-title" class="max-w-[560px] text-balance text-3xl font-medium tracking-tighter">
+        {s.cta?.heading ?? (available ? `Get ${data.name}` : `${data.name} is on its way.`)}
+      </h2>
+      <p class="max-w-[460px] text-lg text-ink-2">
+        {
+          s.cta?.intro ??
+            (available
+              ? `${data.name} is ${data.platforms.length ? `for ${data.platforms.join(', ')}` : 'available now'}.`
+              : `${data.name} is ${data.status === 'beta' ? 'in beta' : 'in development'}. This page will update as it gets closer.`)
+        }
+      </p>
+      <div class="mt-1.5 flex flex-col items-center gap-3">
+        <ProductCta product={product} size="lg" />
+      </div>
+      <p class="max-w-[52ch] text-sm text-ink-2">
+        Questions go to{' '}
+        <a href={`mailto:${site.email}`} class="text-link underline-offset-4 hover:underline">{site.email}</a>. Read
+        the <a href={supportHref} class="text-link underline-offset-4 hover:underline">support page</a> or the{' '}
+        <a href={privacyHref} class="text-link underline-offset-4 hover:underline">privacy policy</a>.
+      </p>
+    </div>
+  </section>
 </Base>
+
+<style>
+  /* Hero intro (upforair.app): the headline settles in word by word, then the rest fades up. */
+  .word {
+    display: inline-block;
+  }
+
+  :global(.js) .word {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: word-in 0.5s var(--ease-out) forwards;
+    animation-delay: calc(0.35s + var(--i) * 0.06s);
+  }
+
+  :global(.js .hero-in) {
+    opacity: 0;
+    animation: fade-in 0.7s var(--ease-out) forwards;
+  }
+
+  :global(.js .hero-icon),
+  :global(.js .hero-tag) {
+    animation-delay: 0.15s;
+  }
+
+  :global(.js .hero-lead) {
+    animation-delay: 0.9s;
+  }
+
+  :global(.js .hero-cta) {
+    animation-delay: 1.1s;
+  }
+
+  @keyframes word-in {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .word,
+    :global(.js .hero-in) {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Compact tabs: only the selected feature shows its sentence (JavaScript only). */
+  :global(.js) [data-compact] [aria-selected='false'] .feature-body {
+    display: none;
+  }
+
+  /*
+   * Compact tabs on phones (JavaScript only): a scrolling row of glass pills above the phone,
+   * the selected pill in the accent fill, and the selected sentence under the phone. Without
+   * JavaScript the tabs stay a vertical list with every sentence, and the caption stays hidden.
+   */
+  [data-feature-caption] {
+    display: none;
+  }
+
+  @media (max-width: 809.98px) {
+    :global(.js) [data-compact] [role='tablist'] {
+      flex-direction: row;
+      gap: 8px;
+      overflow-x: auto;
+      margin-inline: calc(-1 * var(--gutter));
+      padding-inline: var(--gutter);
+      scrollbar-width: none;
+      scroll-snap-type: x proximity;
+      scroll-padding-inline: var(--gutter);
+    }
+
+    :global(.js) [data-compact] [data-feature] {
+      flex: none;
+      width: auto;
+      padding: 10px 16px;
+      border-radius: var(--radius-pill);
+      background-color: var(--color-glass);
+      box-shadow: inset 0 0 0 1px var(--color-line);
+      scroll-snap-align: start;
+    }
+
+    :global(.js) [data-compact] [data-feature] > span:first-child {
+      font-size: var(--text-base);
+      line-height: var(--text-base--line-height);
+    }
+
+    :global(.js) [data-compact] [data-feature] .feature-body {
+      display: none;
+    }
+
+    :global(.js) [data-compact] [data-feature][aria-selected='true'] {
+      background-color: var(--color-accent);
+      color: var(--color-on-accent);
+      box-shadow: none;
+    }
+
+    :global(.js) [data-feature-caption] {
+      display: block;
+    }
+  }
+
+  /* Compact tabs from 810px: unselected tabs are hairline-separated rows under the selected card. */
+  @media (min-width: 810px) {
+    [data-compact] [data-feature][aria-selected='false'] {
+      padding-block: 14px;
+      border-radius: 0;
+      box-shadow: inset 0 -1px 0 var(--color-line);
+    }
+  }
+</style>
+
+<script>
+  // Feature tabs (upforair.app): hover, click, focus or the arrow keys select a feature,
+  // and its screenshot crossfades in the phone. Compact lists switch on click only,
+  // so moving the pointer down the list does not make it jump.
+  for (const root of document.querySelectorAll<HTMLElement>('[data-features]')) {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-feature]'));
+    const shots = Array.from(root.querySelectorAll<HTMLElement>('[data-shot]'));
+    const panel = root.querySelector<HTMLElement>('[role="tabpanel"]');
+    const list = root.querySelector<HTMLElement>('[role="tablist"]');
+    const caption = root.querySelector<HTMLElement>('[data-feature-caption]');
+    const hoverable = !root.hasAttribute('data-compact');
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+    const activate = (index: number) => {
+      tabs.forEach((tab, i) => {
+        tab.setAttribute('aria-selected', String(i === index));
+        tab.tabIndex = i === index ? 0 : -1;
+      });
+      shots.forEach((shot, i) => {
+        shot.toggleAttribute('data-active', i === index);
+        shot.setAttribute('aria-hidden', String(i !== index));
+      });
+      panel?.setAttribute('aria-labelledby', tabs[index].id);
+      if (caption) caption.textContent = tabs[index].querySelector('.feature-body')?.textContent ?? '';
+      // Centre the selected pill in the phone row. Scrolls only the row, never the page, and is a
+      // no-op when the list does not scroll sideways (the vertical list from 810px).
+      if (list && list.scrollWidth > list.clientWidth) {
+        const tabBox = tabs[index].getBoundingClientRect();
+        const listBox = list.getBoundingClientRect();
+        list.scrollBy({
+          left: tabBox.left + tabBox.width / 2 - (listBox.left + listBox.width / 2),
+          behavior: reduceMotion.matches ? 'auto' : 'smooth',
+        });
+      }
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('pointerenter', (e) => {
+        if (hoverable && e.pointerType === 'mouse') activate(i);
+      });
+      tab.addEventListener('click', () => activate(i));
+      tab.addEventListener('focus', () => activate(i));
+      tab.addEventListener('keydown', (e) => {
+        // Down and Right move on, Up and Left move back: the list is vertical from 810px and a row below.
+        const step = ({ ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 } as Record<string, number>)[e.key];
+        if (!step) return;
+        e.preventDefault();
+        tabs[(i + step + tabs.length) % tabs.length].focus();
+      });
+    });
+  }
+</script>

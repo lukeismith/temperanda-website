@@ -1,16 +1,18 @@
 ---
 /**
  * Primary call to action for a product, derived from status + links.
- * When Up For Air ships, swap the `app-store` branch for Apple's official
+ * Without a link it is the accent pill ("Coming soon to the App Store").
+ * When an app ships, swap the `app-store` branch for Apple's official
  * badge artwork (src/assets/app-store-badge.svg) following Apple's guidelines.
  */
 import type { CollectionEntry } from 'astro:content';
 import { getPrimaryCta } from '../data/product-meta';
 import Button from './Button.astro';
+import Tag from './Tag.astro';
 
 interface Props {
   product: CollectionEntry<'products'>;
-  size?: 'sm' | 'md';
+  size?: 'sm' | 'md' | 'lg';
 }
 
 const { product, size = 'md' } = Astro.props;
@@ -19,7 +21,7 @@ const cta = getPrimaryCta(product);
 
 {
   cta.kind === 'none' ? (
-    <p class="font-mono text-sm text-muted">{cta.label}</p>
+    <Tag tone="accent">{cta.label}</Tag>
   ) : (
     <Button href={cta.href} external size={size}>
       {cta.label}
