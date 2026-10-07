@@ -39,7 +39,7 @@ A product's `status` and `links` frontmatter drive every call to action on the s
 
 | `status` | required link | what shows |
 | --- | --- | --- |
-| `in-development` | none | "TestFlight beta coming soon" (iPhone) or "In development" |
+| `in-development` | none | "Coming soon to the App Store" (iPhone) or "In development" |
 | `beta` | `links.testFlight` | "Join the TestFlight beta" button |
 | `available` | `links.appStore` (iPhone) or `links.store` (device/plugin) | download or buy button |
 
@@ -47,15 +47,25 @@ The build fails if `available` is set without the matching link. Products with `
 are listed as "Unannounced" and get no page; rename the file and remove `stub` when the
 product has a name.
 
-To add screenshots, drop images into `src/assets/products/<slug>/` and list them:
+The product page is built from frontmatter. To add screenshots, drop images into
+`src/assets/products/<slug>/` and reference them. The hero image shows in a phone at the
+top; when every feature has an image, the features become tabs that crossfade their
+screenshots. Use each screenshot once per page.
 
 ```yaml
+theme: up-for-air          # the page's colours: studio, up-for-air, or haptics-lab
+icon: ../../assets/products/up-for-air/icon.svg
 heroImage: ../../assets/products/up-for-air/hero.png
 heroImageAlt: Up For Air home screen showing 47 minutes to spare
-screenshots:
-  - src: ../../assets/products/up-for-air/earn.png
-    alt: The Earn tab
+features:
+  - title: Five ways to make minutes
+    body: Walking, workouts, and mindful minutes come from Apple Health.
+    image: ../../assets/products/up-for-air/earn.png
+    imageAlt: The Earn tab
 ```
+
+`src/content.config.ts` documents every field, including `more`, `pricing.plans`, and
+`sections` (optional headings for each section).
 
 ## Before launch
 

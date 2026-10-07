@@ -3,27 +3,31 @@
  * Every Up For Air checkpoint link (/c/<payload>) is rewritten here by public/_redirects.
  * iOS opens those links in the app when it is installed, so this page only reaches people
  * without the app, or phones where iOS was told to open the site instead.
+ * It wears the Up For Air theme, because only Up For Air's cards lead here.
  */
 import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
+import Tag from '../components/Tag.astro';
+import Glow from '../components/Glow.astro';
 ---
 
-<Base title="Checkpoint" description="An Up For Air checkpoint." noindex>
-  <section class="pb-24 pt-20 md:pt-32">
-    <div class="mx-auto max-w-site px-6">
-      <p class="eyebrow">Up For Air · Checkpoint</p>
-      <h1 class="mt-6 text-display font-medium tracking-tighter">This is an Up For Air checkpoint.</h1>
-      <p class="mt-8 max-w-[40ch] text-lg text-muted">
+<Base title="Checkpoint" description="An Up For Air checkpoint." noindex theme="up-for-air">
+  <section class="section-pad relative flex min-h-[70svh] items-center overflow-hidden">
+    <Glow x="50%" y="45%" width="60%" height="60%" opacity={0.24} />
+    <div class="site-wrap relative z-[1] flex flex-col items-center gap-[22px] text-center">
+      <Tag>Up For Air · Checkpoint</Tag>
+      <h1 class="max-w-[14ch] text-balance text-display font-medium tracking-tighter">
+        This is an Up For Air checkpoint.
+      </h1>
+      <p class="max-w-[40ch] text-lg text-ink-2">
         Up For Air is an iPhone app. When it is installed, scanning this card or holding your phone near
         this tag opens the app instead of this page.
       </p>
-      <p class="mt-4 max-w-[40ch] text-lg text-muted">
+      <p class="max-w-[40ch] text-lg text-ink-2">
         If you have the app and still see this page, open Up For Air, go to Checkpoints, and choose Scan
         a checkpoint or Read a tag.
       </p>
-      <div class="mt-10">
-        <Button href="/products/up-for-air/">About Up For Air</Button>
-      </div>
+      <Button href="/products/up-for-air/" class="mt-2">About Up For Air</Button>
     </div>
   </section>
 </Base>

@@ -5,19 +5,19 @@ description: A small software studio developing iPhone applications as well as a
 
 <!-- Draft copy. Replace the bracketed parts. -->
 
-Temperanda is a software studio run by Luke Smith, based in Chicago. It started in 2026 with a simple idea: the tools we wanted did not exist yet, so we would make them.
+Temperanda is a software studio run by Luke, based in Chicago. It started in 2026 with a simple idea: to create user focused software that helps people solve problems.
 
 ## What we make
 
-**iPhone apps.** Small, focused apps for everyday problems. The first is [Up For Air](/products/up-for-air/), an app that locks your distracting apps and lets you make the minutes to open them in the real world.
+**iPhone apps.** Small, focused apps for everyday problems. [Up For Air](/products/up-for-air/) is an app that helps prevent people from getting lost in their "rabbit holes" a.k.a doomscrolling on their phone for hours on end. [Haptics Lab](/products/haptics-lab) is designed to be the most comprehensive haptics developer tool available on the app store.
 
-**Max for Live devices.** Instruments and effects for Ableton Live, built in Max, designed to be played rather than configured.
+**Max for Live devices.** A collection of utilities I developed to solve my own problems. Coming soon.
 
-**Audio plugins.** VST3 and AU plugins for the tools that live outside Ableton.
+**Audio plugins.** My first standalone/VST/AU plugin is under development. Stay tuned for more.
 
 ## How we work
 
-We build one thing at a time and finish it. Every product here started as something we needed ourselves, in the studio or on the phone, and each one is used daily by the people who make it.
+Every product here started as something I needed in my own day to day life, I use my own products regularly and hope that others can benefit as well.
 
 ## Get in touch
 

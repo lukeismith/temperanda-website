@@ -3,6 +3,7 @@
 import { getEntry, render } from 'astro:content';
 import Base from './Base.astro';
 import Section from '../components/Section.astro';
+import Glow from '../components/Glow.astro';
 import Prose from '../components/Prose.astro';
 
 interface Props {
@@ -27,16 +28,21 @@ const updatedLabel = updated?.toLocaleDateString('en-US', {
 ---
 
 <Base title={title} description={description}>
-  <Section flush columns as="h1" eyebrow={eyebrow ?? title} heading={title} intro={description}>
-    {
-      updated && (
-        <p class="eyebrow mb-8">
-          Last updated <time datetime={updated.toISOString().slice(0, 10)}>{updatedLabel}</time>
-        </p>
-      )
-    }
-    <Prose>
-      <Content />
-    </Prose>
-  </Section>
+  <div class="relative overflow-hidden">
+    <Glow x="15%" y="0%" width="60%" height="35%" opacity={0.2} />
+    <Section as="h1" align="left" eyebrow={eyebrow ?? title} heading={title} intro={description}>
+      <div class="max-w-[680px]">
+        {
+          updated && (
+            <p class="eyebrow mb-8">
+              Last updated <time datetime={updated.toISOString().slice(0, 10)}>{updatedLabel}</time>
+            </p>
+          )
+        }
+        <Prose>
+          <Content />
+        </Prose>
+      </div>
+    </Section>
+  </div>
 </Base>

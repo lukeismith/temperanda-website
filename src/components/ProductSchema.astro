@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { product } = Astro.props;
-const { name, description, tagline, category, status } = product.data;
+const { name, description, tagline, category, status, appCategory } = product.data;
 const cta = getPrimaryCta(product);
 const schema = {
   '@context': 'https://schema.org',
@@ -18,7 +18,7 @@ const schema = {
   description: description ?? tagline,
   url: new URL(`/products/${product.id}/`, Astro.site).toString(),
   operatingSystem: category === 'ios' ? 'iOS' : 'macOS, Windows',
-  applicationCategory: category === 'ios' ? 'LifestyleApplication' : 'MultimediaApplication',
+  applicationCategory: appCategory ?? (category === 'ios' ? 'UtilitiesApplication' : 'MultimediaApplication'),
   author: { '@type': 'Organization', name: site.name, url: Astro.site?.toString() },
   ...(status === 'available' && cta.kind !== 'none' ? { downloadUrl: cta.href } : {}),
 };

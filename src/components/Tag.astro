@@ -1,0 +1,41 @@
+---
+/**
+ * Pill label: the glass pill from upforair.app with Temperanda's mono eyebrow type.
+ * `accent` is the warm ribbon: an accent tint with link-coloured text.
+ * With `href` it is a link, with the press and the accent-fill hover of a button.
+ * `lg` matches the height of a large button (52px).
+ */
+interface Props {
+  tone?: 'glass' | 'accent';
+  size?: 'md' | 'lg';
+  href?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { tone = 'glass', size = 'md', href, class: className, ...rest } = Astro.props;
+const Element = href ? 'a' : 'span';
+const tones = {
+  glass: 'bg-canvas/40 text-ink inset-ring inset-ring-line backdrop-blur-[10px]',
+  accent: 'bg-accent/15 text-link',
+};
+const sizes = {
+  md: 'px-3 py-1.5 text-xs',
+  lg: 'min-h-[52px] px-6 text-sm',
+};
+---
+
+<Element
+  href={href}
+  class:list={[
+    'inline-flex items-center gap-2 whitespace-nowrap rounded-pill font-mono uppercase tracking-eyebrow',
+    sizes[size],
+    tones[tone],
+    href &&
+      'transition-[background-color,color,box-shadow,scale] duration-200 ease-out hover:bg-accent hover:text-on-accent hover:inset-ring-accent active:scale-[0.985]',
+    className,
+  ]}
+  {...rest}
+>
+  <slot />
+</Element>

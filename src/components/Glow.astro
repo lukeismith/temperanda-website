@@ -1,0 +1,33 @@
+---
+/**
+ * A soft radial glow behind a group of glass cards, in the page's accent.
+ * `accent` is the fill colour, `link` the lighter text colour. Pure CSS, no image.
+ * Place it inside a positioned parent; it fills that parent and sits behind z-[1] content.
+ */
+interface Props {
+  tone?: 'accent' | 'link';
+  x?: string;
+  y?: string;
+  width?: string;
+  height?: string;
+  opacity?: number;
+  class?: string;
+}
+
+const {
+  tone = 'accent',
+  x = '50%',
+  y = '50%',
+  width = '70%',
+  height = '60%',
+  opacity = 0.2,
+  class: className,
+} = Astro.props;
+---
+
+<div
+  aria-hidden="true"
+  class:list={['pointer-events-none absolute inset-0 z-0 blur-[24px]', className]}
+  style={`opacity: calc(${opacity} * var(--glow-gain, 1)); background: radial-gradient(${width} ${height} at ${x} ${y}, var(--color-${tone}), transparent 70%)`}
+>
+</div>

@@ -14,6 +14,8 @@ interface Props {
   ogAlt?: string;
   ogType?: 'website' | 'article';
   noindex?: boolean;
+  /** An app page's colour theme (src/styles/global.css). Company pages leave it out. */
+  theme?: 'studio' | 'up-for-air' | 'haptics-lab';
 }
 
 const {
@@ -23,6 +25,7 @@ const {
   ogAlt = site.ogAlt,
   ogType = 'website',
   noindex = false,
+  theme = 'studio',
 } = Astro.props;
 
 const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
@@ -32,7 +35,7 @@ const ogImageUrl = new URL(ogImage, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme={theme === 'studio' ? undefined : theme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -41,8 +44,8 @@ const ogImageUrl = new URL(ogImage, Astro.site);
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    {/* Mirrors --color-surface in global.css; the one colour value allowed outside the stylesheet. */}
-    <meta name="theme-color" content="#f4f3ef" />
+    {/* Mirrors --color-canvas in global.css; the one colour value allowed outside the stylesheet. */}
+    <meta name="theme-color" content="#000000" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <meta property="og:type" content={ogType} />
@@ -69,13 +72,13 @@ const ogImageUrl = new URL(ogImage, Astro.site);
   <body class="flex min-h-screen flex-col">
     <a href="#main" class="skip-link">Skip to content</a>
     <Nav />
-    <main id="main" class="flex-1">
+    <main id="main" class="flex-1 pt-[var(--nav-h)]">
       <slot />
     </main>
     <Footer />
 
     <script>
-      // Reveal-on-scroll for [data-reveal] elements. Respects reduced motion.
+      // Reveal-on-scroll for [data-reveal] elements, with upforair.app's timing. Respects reduced motion.
       const elements = document.querySelectorAll<HTMLElement>('[data-reveal]');
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -93,7 +96,7 @@ const ogImageUrl = new URL(ogImage, Astro.site);
               }
             }
           },
-          { rootMargin: '0px 0px -40px 0px', threshold: 0.1 },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.1 },
         );
         elements.forEach((el) => observer.observe(el));
       }
